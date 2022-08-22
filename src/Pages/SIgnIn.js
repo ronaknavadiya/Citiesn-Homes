@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ReactComponent as ArrowRightIcon } from "../assets/svg/keyboardArrowRightIcon.svg";
 import visibilityIcon from "../assets/svg/visibilityIcon.svg";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { toast } from "react-toastify";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,13 +18,32 @@ const SignIn = () => {
     setFormData((state) => ({ ...state, [e.target.id]: e.target.value }));
   };
 
+  const LogInUser = async (e) => {
+    e.preventDefault();
+    try {
+      const auth = getAuth();
+      const userCredentials = await signInWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const user = userCredentials.user;
+      if (user) {
+        toast("User Logged in Successfully");
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("Please provide valid credentials");
+    }
+  };
+
   return (
     <>
       <div className="pageContainer">
         <header>
           <p className="pageHeader">Welcome Back!</p>
         </header>
-        <form>
+        <form onSubmit={LogInUser}>
           <div className="emailInputDiv">
             <input
               type="email"
@@ -49,7 +70,7 @@ const SignIn = () => {
               className="showPassword"
             />
           </div>
-          <Link to="/forgotPassword" className="forgotPassword">
+          <Link to="/forgotPassword" className="forgotPasswordLink">
             Forgot Password ?
           </Link>
           <div className="signInBar">

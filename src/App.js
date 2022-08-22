@@ -7,21 +7,24 @@ import Offers from "./Pages/Offers";
 import ForgotPassword from "./Pages/ForgotPassword";
 import UserProfile from "./Pages/UserProfile";
 import Navbar from "./components/Navbar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   return (
     <>
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/signIn" element={<SignIn />}></Route>
-        <Route path="/signUp" element={<Signup />}></Route>
-        <Route path="/offers" element={<Offers />}></Route>
-        <Route path="/forgotPassword" element={<ForgotPassword />}></Route>
-        <Route path="/profile" element={<Signup />}></Route>
-      </Routes>
-      <Navbar />
-    </Router>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />}></Route>
+          <Route path="/signIn" element={<SignIn />}></Route>
+          <Route path="/signUp" element={<Signup />}></Route>
+          <Route path="/offers" element={<Offers />}></Route>
+          <Route path="/forgotPassword" element={<ForgotPassword />}></Route>
+          <Route path="/profile" element={<UserProfile />}></Route>
+        </Routes>
+        <Navbar />
+      </Router>
+      <ToastContainer />
     </>
   );
 };

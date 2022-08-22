@@ -2,6 +2,14 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ReactComponent as ArrowRightIcon } from "../assets/svg/keyboardArrowRightIcon.svg";
 import visibilityIcon from "../assets/svg/visibilityIcon.svg";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { database, dbdatabase } from "../firebase.config";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,13 +25,38 @@ const Signup = () => {
     setFormData((state) => ({ ...state, [e.target.id]: e.target.value }));
   };
 
+  const createUser = async (e) => {
+    e.preventDefault();
+    try {
+      const auth = getAuth();
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const user = userCredentials.user;
+      updateProfile(auth.currentUser, { displayName: formData.name });
+
+      const formDataCopy = { ...formData };
+      delete formDataCopy.password;
+      formDataCopy.timeStamp = serverTimestamp();
+
+      await setDoc(doc(database, "users", user.uid), formDataCopy);
+      toast("User created successfully");
+      navigate("/");
+    } catch (error) {
+      toast.erorr("Error: Please try again...");
+      console.log("Error:", error);
+    }
+  };
+
   return (
     <>
       <div className="pageContainer">
         <header>
           <p className="pageHeader">Welcome To housing world!</p>
         </header>
-        <form>
+        <form onSubmit={createUser}>
           <div className="nameInputDiv">
             <input
               type="text"
@@ -60,7 +93,7 @@ const Signup = () => {
               className="showPassword"
             />
           </div>
-          <Link to="/forgotPassword" className="forgotPassword">
+          <Link to="/forgotPassword" className="forgotPasswordLink">
             Forgot Password ?
           </Link>
           <div className="signUpBar">
