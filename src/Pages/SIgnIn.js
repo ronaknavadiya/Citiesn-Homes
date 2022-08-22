@@ -4,6 +4,7 @@ import { ReactComponent as ArrowRightIcon } from "../assets/svg/keyboardArrowRig
 import visibilityIcon from "../assets/svg/visibilityIcon.svg";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
+import OAuth from "../components/OAuth";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -74,12 +75,13 @@ const SignIn = () => {
             Forgot Password ?
           </Link>
           <div className="signInBar">
-            <p className="singInText">Sign In</p>
+            <p className="signInText">Sign In</p>
             <button className="signInButton">
               <ArrowRightIcon fill="#ffffff" width="34px" height="34px" />
             </button>
           </div>
         </form>
+        <OAuth />
         <Link to="/signUp" className="registerLink">
           Create new Account?
         </Link>
