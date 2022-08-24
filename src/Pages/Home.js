@@ -20,7 +20,7 @@ const Home = () => {
           />
           <p className="exploreCategoryName">Places for rent</p>
         </Link>
-        <Link to="/category/rent">
+        <Link to="/category/sell">
           <img
             src={sellCategotyImage}
             alt="sellCategotyImage"
