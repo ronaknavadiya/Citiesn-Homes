@@ -12,6 +12,8 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { database } from "../firebase.config";
 
 const CreateListing = () => {
   const [formData, setFormData] = useState({
@@ -109,7 +111,6 @@ const CreateListing = () => {
     } else {
       geoLocation.lat = { latitude };
       geoLocation.lng = { longitude };
-      location = address;
     }
 
     // Store images in firebase storage
@@ -126,15 +127,7 @@ const CreateListing = () => {
           (snapshot) => {
             const progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log("Upload is " + progress + "% done");
-            switch (snapshot.state) {
-              case "paused":
-                toast("Upload is paused");
-                break;
-              case "running":
-                console.log("Upload is running");
-                break;
-            }
+            // console.log("Upload is " + progress + "% done");
           },
           (error) => {
             reject(error);
@@ -154,13 +147,31 @@ const CreateListing = () => {
       [...images].map((image) => storeImage(image))
     ).catch((err) => {
       setLoading(false);
-      toast.error("Images not uploaded - make sure file is less than 4 MB");
+      toast.error("Images not uploaded - make sure file is less than 10 MB");
       return;
     });
-
     console.log(imageUrls);
 
+    const validatedFormData = {
+      ...formData,
+      imageUrls,
+      geoLocation,
+      timeStamp: serverTimestamp(),
+    };
+
+    delete validatedFormData.images; // saved imageURLs
+    delete validatedFormData.address; // will save it in location
+    validatedFormData.location = address;
+    !validatedFormData.offer && delete validatedFormData.discountedPrice;
+
+    const docRef = await addDoc(
+      collection(database, "listings"),
+      validatedFormData
+    );
+
     setLoading(false);
+    toast.success("Listing has been created...");
+    navigate(`/category/${validatedFormData.type}/${docRef.id}`);
   };
 
   const handleFormChange = (e) => {
