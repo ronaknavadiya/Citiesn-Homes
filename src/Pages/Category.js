@@ -24,27 +24,27 @@ const Category = () => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
+       
         const listingsRef = collection(database, "listings");
-
-        const listingQuery = query(
+        const queryListing = query(
           listingsRef,
           where("type", "==", params.categoryName),
-          orderBy("timestamp", "desc"),
-          limit(10)
+          // orderBy("timestamp"),
+          // orderBy("timestamp", "desc"),
+          limit(30)
         );
 
-        const querySnapshot = await getDocs(listingQuery);
-
+        const querySnapshot = await getDocs(queryListing);
         let listings = [];
-
         querySnapshot.forEach((doc) => {
-          return listings.push({ id: doc.id, data: doc.data() });
+          listings.push({ id: doc.id, data: doc.data() });
         });
-
         setListings(listings);
         setLoading(false);
       } catch (error) {
         toast.error("Couldn't fetch listings");
+        setLoading(false);
+        console.log(error);
       }
     };
 
@@ -67,7 +67,13 @@ const Category = () => {
           <main>
             <ul className="categoryListings">
               {listings.map((listing) => {
-                return <ListingItem key={listing.id} id={listing.id} listing={listing.data} />;
+                return (
+                  <ListingItem
+                    key={listing.id}
+                    id={listing.id}
+                    listing={listing.data}
+                  />
+                );
               })}
             </ul>
           </main>

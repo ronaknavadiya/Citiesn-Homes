@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import rentCategotyImage from "../assets/jpg/rentCategoryImage.jpg";
 import sellCategotyImage from "../assets/jpg/sellCategoryImage.jpg";
+import Slider from "../components/Slider";
 
 const Home = () => {
   return (
@@ -10,6 +11,7 @@ const Home = () => {
         <p className="pageHeader">Explore</p>
       </header>
       {/* Slider */}
+      <Slider />
       <p className="exploreCategoryHeading">Categories</p>
       <div className="exploreCategories">
         <Link to="/category/rent">

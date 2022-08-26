@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import React, { useState } from "react";
@@ -9,6 +8,11 @@ import { toast } from "react-toastify";
 import shareIcon from "../assets/svg/shareIcon.svg";
 import Spinner from "../components/Spinner";
 import { database } from "../firebase.config";
+import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css";
+
+SwiperCore.use([Navigation, Pagination, Scrollbar, A11y]);
 
 const Listing = () => {
   const [listing, setListing] = useState(null);
@@ -42,6 +46,22 @@ const Listing = () => {
   return (
     <main>
       {/* Slider */}
+
+      <Swiper slidesPerView={1} pagination={{ clickable: true }}>
+        {listing?.imageUrls?.map((imageUrl, index) => {
+          return (
+            <SwiperSlide key={index}>
+              <div
+                className="swiperSlideDiv"
+                style={{
+                  background: `url(${imageUrl}) center no-repeat`,
+                  backgroundSize: "cover",
+                }}
+              ></div>
+            </SwiperSlide>
+          );
+        })}
+      </Swiper>
 
       <div
         className="shareIconDiv"
@@ -112,8 +132,7 @@ const Listing = () => {
             </Marker>
           </MapContainer>
         </div>
-
-        {auth.currentUser?.uid !== listing.userRef && (
+        {auth.currentUser?.uid != listing.userRef && (
           <Link
             to={`/contact/${listing.userRef}?listingName=${listing.name}`}
             className="primaryButton"

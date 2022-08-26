@@ -1,17 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { getAuth, updateProfile } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
-import { doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { database } from "../firebase.config";
 import { toast } from "react-toastify";
 import arrowRight from "../assets/svg/keyboardArrowRightIcon.svg";
 import homeIcon from "../assets/svg/homeIcon.svg";
+import Spinner from "../components/Spinner";
+import ListingItem from "../components/ListingItem";
+import { async } from "@firebase/util";
 
 const UserProfile = () => {
   const auth = getAuth();
   const navigate = useNavigate();
 
   const [updateUser, setUpdateUser] = useState(false);
+  const [listings, setListings] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     name: auth.currentUser.displayName,
@@ -45,6 +59,50 @@ const UserProfile = () => {
     }
   };
 
+  const DeleteListing = async (listingId) => {
+    try {
+      if (window.confirm("Are you sure you want to delete ? ")) {
+        await deleteDoc(doc(database, "listings", listingId));
+        const updatedListings = listings.filter(
+          (listing) => listing.id !== listingId
+        );
+        setListings(updatedListings);
+        toast.success("Listing Deleted successfully");
+      }
+    } catch (error) {
+      toast.error("Coudn't delete ..");
+    }
+  };
+
+  useEffect(() => {
+    const fetchUserListing = async () => {
+      try {
+        setLoading(true);
+        const listingsRef = collection(database, "listings");
+        const queryListing = query(
+          listingsRef,
+          where("userRef", "==", auth.currentUser.uid),
+          // orderBy("timestamp", "desc")
+        );
+
+        const querySnapshot = await getDocs(queryListing);
+        let listings = [];
+        querySnapshot.forEach((doc) => {
+          console.log("...",doc.data());
+          listings.push({ id: doc.id, data: doc.data() });
+        });
+        setListings(listings);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUserListing();
+  }, [auth.currentUser.uid]);
+
+  if (loading) {
+    return <Spinner />;
+  }
   return (
     <div className="profile">
       <header className="profileHeader">
@@ -94,6 +152,23 @@ const UserProfile = () => {
           <p>Sell or Rent your home</p>
           <img src={arrowRight} alt="Arrow right" />
         </Link>
+        {!loading && listings?.length > 0 && (
+          <>
+            <p className="listingText">Your Listing</p>
+            <ul className="listingsList">
+              {listings.map((listing) => {
+                return (
+                  <ListingItem
+                    key={listing.id}
+                    listing={listing.data}
+                    id={listing.id}
+                    onDelete={() => DeleteListing(listing.id)}
+                  />
+                );
+              })}
+            </ul>
+          </>
+        )}
       </main>
     </div>
   );

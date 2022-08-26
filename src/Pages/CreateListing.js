@@ -58,7 +58,7 @@ const CreateListing = () => {
     if (isMounted) {
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          setFormData({ ...formData, useRef: user.uid });
+          setFormData({ ...formData, userRef: user.uid });
         } else {
           navigate("/signIn");
         }
@@ -109,8 +109,8 @@ const CreateListing = () => {
         return;
       }
     } else {
-      geoLocation.lat = { latitude };
-      geoLocation.lng = { longitude };
+      geoLocation.lat = latitude;
+      geoLocation.lng = longitude;
     }
 
     // Store images in firebase storage
