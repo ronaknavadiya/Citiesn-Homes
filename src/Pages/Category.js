@@ -16,11 +16,10 @@ import { database } from "../firebase.config";
 import Spinner from "../components/Spinner";
 import ListingItem from "../components/ListingItem";
 
-const Offers = () => {
+const Category = () => {
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
-    const [lastFetchedListing, setLastFetchedListing] = useState(null);
-
+  const [lastFetchedListing, setLastFetchedListing] = useState(null);
 
   const params = useParams();
 
@@ -28,25 +27,22 @@ const Offers = () => {
     const fetchListings = async () => {
       try {
         const listingsRef = collection(database, "listings");
-
-        const listingQuery = query(
+        const queryListing = query(
           listingsRef,
-          where("offer", "==", true),
+          where("type", "==", params.categoryName),
           orderBy("timeStamp", "desc"),
-          limit(10)
+          limit(5)
         );
 
-        const querySnapshot = await getDocs(listingQuery);
+        const querySnapshot = await getDocs(queryListing);
 
         const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
         setLastFetchedListing(lastVisible);
 
         let listings = [];
-
         querySnapshot.forEach((doc) => {
-          return listings.push({ id: doc.id, data: doc.data() });
+          listings.push({ id: doc.id, data: doc.data() });
         });
-
         setListings(listings);
         setLoading(false);
       } catch (error) {
@@ -57,41 +53,45 @@ const Offers = () => {
     };
 
     fetchListings();
-  }, []);
+  }, [params.categoryName]);
 
-   const fetchMoreListings = async () => {
-     try {
-       const listingsRef = collection(database, "listings");
+  const fetchMoreListings = async () => {
+    try {
+      const listingsRef = collection(database, "listings");
+      const queryListing = query(
+        listingsRef,
+        where("type", "==", params.categoryName),
+        orderBy("timeStamp", "desc"),
+        startAfter(lastFetchedListing),
+        limit(10)
+      );
 
-       const listingQuery = query(
-         listingsRef,
-         where("offer", "==", true),
-         orderBy("timeStamp", "desc"),
-         startAfter(),
-         limit(10)
-       );
+      const querySnapshot = await getDocs(queryListing);
 
-       const querySnapshot = await getDocs(listingQuery);
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      setLastFetchedListing(lastVisible);
 
-       let listings = [];
-
-       querySnapshot.forEach((doc) => {
-         return listings.push({ id: doc.id, data: doc.data() });
-       });
-
-       setListings(listings);
-       setLoading(false);
-     } catch (error) {
-       toast.error("Couldn't fetch listings");
-       setLoading(false);
-       console.log(error);
-     }
-   };
+      let listings = [];
+      querySnapshot.forEach((doc) => {
+        listings.push({ id: doc.id, data: doc.data() });
+      });
+      setListings((prevState)=> [...prevState, ...listings]);
+      setLoading(false);
+    } catch (error) {
+      toast.error("Couldn't fetch listings");
+      setLoading(false);
+      console.log(error);
+    }
+  };
 
   return (
     <div className="category">
       <header>
-        <p className="pageHeader">Offers</p>
+        <p className="pageHeader">
+          {params.categoryName == "rent"
+            ? "Places for rent"
+            : "Places for Sell"}
+        </p>
       </header>
       {loading ? (
         <Spinner />
@@ -120,10 +120,10 @@ const Offers = () => {
           )}
         </>
       ) : (
-        <p>No current offers, Please explore from home page..</p>
+        <p>No Listings for {params.categoryName}</p>
       )}
     </div>
   );
 };
 
-export default Offers;
+export default Category;
