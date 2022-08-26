@@ -74,6 +74,10 @@ const UserProfile = () => {
     }
   };
 
+  const editListing = async (listingId) => {
+    navigate(`/editListing/${listingId}`);
+  };
+
   useEffect(() => {
     const fetchUserListing = async () => {
       try {
@@ -164,6 +168,7 @@ const UserProfile = () => {
                     listing={listing.data}
                     id={listing.id}
                     onDelete={() => DeleteListing(listing.id)}
+                    onEdit={() => editListing(listing.id)}
                   />
                 );
               })}
