@@ -67,7 +67,7 @@ const Offers = () => {
          listingsRef,
          where("offer", "==", true),
          orderBy("timeStamp", "desc"),
-         startAfter(),
+         startAfter(lastFetchedListing),
          limit(10)
        );
 
@@ -79,7 +79,7 @@ const Offers = () => {
          return listings.push({ id: doc.id, data: doc.data() });
        });
 
-       setListings(listings);
+       setListings((prevState) => [...prevState, ...listings]);
        setLoading(false);
      } catch (error) {
        toast.error("Couldn't fetch listings");
