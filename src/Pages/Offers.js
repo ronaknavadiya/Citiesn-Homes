@@ -4,6 +4,7 @@ import {
   limit,
   orderBy,
   query,
+  startAfter,
   where,
 } from "firebase/firestore";
 import React from "react";
@@ -18,6 +19,8 @@ import ListingItem from "../components/ListingItem";
 const Offers = () => {
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
+    const [lastFetchedListing, setLastFetchedListing] = useState(null);
+
 
   const params = useParams();
 
@@ -29,11 +32,14 @@ const Offers = () => {
         const listingQuery = query(
           listingsRef,
           where("offer", "==", true),
-          orderBy("timestamp", "desc"),
+          orderBy("timeStamp", "desc"),
           limit(10)
         );
 
         const querySnapshot = await getDocs(listingQuery);
+
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        setLastFetchedListing(lastVisible);
 
         let listings = [];
 
@@ -45,18 +51,47 @@ const Offers = () => {
         setLoading(false);
       } catch (error) {
         toast.error("Couldn't fetch listings");
+        setLoading(false);
+        console.log(error);
       }
     };
 
     fetchListings();
   }, []);
 
+   const fetchMoreListings = async () => {
+     try {
+       const listingsRef = collection(database, "listings");
+
+       const listingQuery = query(
+         listingsRef,
+         where("offer", "==", true),
+         orderBy("timeStamp", "desc"),
+         startAfter(),
+         limit(10)
+       );
+
+       const querySnapshot = await getDocs(listingQuery);
+
+       let listings = [];
+
+       querySnapshot.forEach((doc) => {
+         return listings.push({ id: doc.id, data: doc.data() });
+       });
+
+       setListings(listings);
+       setLoading(false);
+     } catch (error) {
+       toast.error("Couldn't fetch listings");
+       setLoading(false);
+       console.log(error);
+     }
+   };
+
   return (
     <div className="category">
       <header>
-        <p className="pageHeader">
-          Offers
-        </p>
+        <p className="pageHeader">Offers</p>
       </header>
       {loading ? (
         <Spinner />
@@ -75,6 +110,14 @@ const Offers = () => {
               })}
             </ul>
           </main>
+          <br />
+          <br />
+          <br />
+          {lastFetchedListing && (
+            <p className="loadMore" onClick={fetchMoreListings}>
+              Load More
+            </p>
+          )}
         </>
       ) : (
         <p>No current offers, Please explore from home page..</p>

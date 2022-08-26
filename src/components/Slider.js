@@ -21,7 +21,7 @@ const Slider = () => {
       const listingRef = collection(database, "listings");
       const listingQuery = query(
         listingRef,
-        orderBy("timestamp", "desc"),
+        orderBy("timeStamp", "desc"),
         limit(5)
       );
       const querySnapShot = await getDocs(listingQuery);

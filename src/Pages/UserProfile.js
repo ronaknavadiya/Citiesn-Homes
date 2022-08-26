@@ -82,19 +82,20 @@ const UserProfile = () => {
         const queryListing = query(
           listingsRef,
           where("userRef", "==", auth.currentUser.uid),
-          // orderBy("timestamp", "desc")
+          orderBy("timeStamp", "desc")
         );
 
         const querySnapshot = await getDocs(queryListing);
         let listings = [];
         querySnapshot.forEach((doc) => {
-          console.log("...",doc.data());
+          console.log("...", doc.data());
           listings.push({ id: doc.id, data: doc.data() });
         });
         setListings(listings);
         setLoading(false);
       } catch (error) {
         console.log(error);
+        setLoading(false);
       }
     };
     fetchUserListing();
