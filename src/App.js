@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./Pages/Home";
-import SignIn from "./Pages/SignIn.js";
 import Signup from "./Pages/Signup";
 import Offers from "./Pages/Offers";
 import ForgotPassword from "./Pages/ForgotPassword";
@@ -15,6 +14,7 @@ import CreateListing from "./Pages/CreateListing";
 import Listing from "./Pages/Listing";
 import Contact from "./Pages/Contact";
 import EditListing from "./Pages/EditListing";
+import SignIn from "./Pages/SignIn";
 
 const App = () => {
   return (
