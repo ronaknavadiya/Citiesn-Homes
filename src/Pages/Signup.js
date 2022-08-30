@@ -53,7 +53,7 @@ const Signup = () => {
 
   return (
     <>
-      <div className="pageContainer">
+      <div className="pageContainer signUpContainer">
         <header>
           <p className="pageHeader">Welcome To housing world!</p>
         </header>
@@ -106,7 +106,7 @@ const Signup = () => {
         </form>
         <OAuth />
         <Link to="/signIn" className="registerLink">
-          Wanna logged in...?
+          Wanna log in...?
         </Link>
       </div>
     </>
