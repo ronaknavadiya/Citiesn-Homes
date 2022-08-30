@@ -820,3 +820,17 @@ button {
   font-size: 0.8rem;
   opacity: 0.75;
 }
+
+.signUpContainer{
+  overflow: scroll;
+  margin-bottom: 5rem;
+  /*Hide scrollbar for  FireFox */
+  -ms-overflow-style: none;
+    /*Hide scrollbar for  IE and Edge */
+    scrollbar-width: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.signUpContainer::-webkit-scrollbar {
+  display: none;
+}
